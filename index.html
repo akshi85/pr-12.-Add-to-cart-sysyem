@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+
+    .products {
+        display: flex;
+        gap: 20px;
+    }
+
+    .product {
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 7px;
+        text-align: center;
+    }
+
+    .cart {
+        margin-top: 20px;
+    }
+
+    #cart-items {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .cart-item button {
+        margin-left: 10px;
+    }
+
+    .product button {
+        background-color: rgb(119, 156, 243);
+        color: black;
+        border-radius: 7px;
+        width: 100px;
+        height: 30px;
+        cursor: pointer;
+        border-style: none;
+
+    }
+
+    button {
+        background-color: rgb(119, 156, 243);
+        color: black;
+        border-radius: 7px;
+        width: 100px;
+        height: 30px;
+        cursor: pointer;
+        border-style: none;
+
+    }
+</style>
+
+<body>
+
+    <h1>Shopping Cart</h1>
+    <div class="products">
+        <!-- 1 -->
+        <div class="product" data-id="1" data-name="Product 1" data-price="10.00">
+
+            <img src="Apple 1.webp" width="230px" height="220px">
+            <p>product-name: Apple</p>
+            <p>product-color:Blue</p>
+            <p>product-Price: 1000</p>
+            <button class="add-to-cart">Add to Cart</button>
+        </div>
+        <!-- 2 -->
+        <div class="product" data-id="2" data-name="Product 2" data-price="15.00">
+
+            <img src="puma.4.jpg" width="230px" height="220px">
+            <p>product-name: Puma</p>
+            <p>product-color:Black</p>
+            <p>product-Price: 1500 </p>
+            <button class="add-to-cart">Add to Cart</button>
+        </div>
+    </div>
+
+    <h2>Cart</h2>
+    <div class="cart">
+        <ul id="cart-items">
+            
+        </ul>
+        <p>Total: <span id="total-price">0.00</span></p>
+    </div>
+    <button onclick="ClearAll() ">
+        Clear All
+    </button>
+
+
+
+    <script>
+      
+
+        // Initialize an empty cart
+        let cart = [];
+
+        // Function to render the cart
+        function renderCart() {
+            const cartItems = document.getElementById('cart-items');
+            const totalPrice = document.getElementById('total-price');
+
+            // localStorage.setItem("cartItems",cart-items);
+            // localStorage.setItem("totalPrice",total-price);
+            cartItems.innerHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'cart-item';
+                li.innerHTML = `
+            ${item.name} - ${item.price.toFixed(2)} x ${item.quantity}
+            <button class="update" data-id="${item.id}" >Update</button>
+            <button class="delete" data-id="${item.id}">Delete</button>
+        `;
+                cartItems.appendChild(li);
+                total += item.price * item.quantity;
+            });
+
+            totalPrice.textContent = total.toFixed(2);
+            
+        }
+
+        // Function to add a product to the cart
+        function addToCart(product) {
+            const existingItem = cart.find(item => item.id === product.id);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            renderCart();
+        }
+        console.log(localStorage);
+
+        // Function to update the quantity of a cart item
+        function updateCartItem(productId) {
+            const quantity = prompt('Enter new quantity:');
+            const item = cart.find(item => item.id === productId);
+            if (item && quantity !== null) {
+                item.quantity = parseInt(quantity, 10);
+                renderCart();
+            }
+        }
+
+        // Function to delete a cart item
+        function deleteCartItem(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            renderCart();
+        }
+
+        // Event listeners for Add to Cart buttons
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const productElement = event.target.closest('.product');
+                const product = {
+                    id: productElement.getAttribute('data-id'),
+                    name: productElement.getAttribute('data-name'),
+                    price: parseFloat(productElement.getAttribute('data-price'))
+                };
+                addToCart(product);
+            });
+        });
+        console.log(localStorage);
+
+        // Event listener for Update and Delete buttons
+        document.getElementById('cart-items').addEventListener('click', (event) => {
+            if (event.target.classList.contains('update')) {
+                const productId = event.target.getAttribute('data-id');
+                updateCartItem(productId);
+            }
+
+            if (event.target.classList.contains('delete')) {
+                const productId = event.target.getAttribute('data-id');
+                deleteCartItem(productId);
+            }
+        });
+        
+
+        const ClearAll = () => {
+            localStorage.removeItem('data');
+            location.reload();
+            console.log(localStorage);
+        }
+
+    </script>
+</body>
+
+</html>
